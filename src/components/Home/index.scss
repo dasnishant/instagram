@@ -1,0 +1,21 @@
+@import "../../variables.scss";
+
+$feedsContainerWidth: 600px;
+
+.feeds {
+  margin: 65px auto;
+  width: $feedsContainerWidth;
+  .feedItem {
+    background-color: $primaryColor;
+    border: $border;
+    margin-bottom: 20px;
+    p {
+      padding: 30px 20px;
+      margin: 0;
+    }
+  }
+  .postFooter {
+    padding-left: 20px;
+    padding-bottom: 10px;
+  }
+}

@@ -1,0 +1,21 @@
+todos:
+
+//event channel
+    // function * syncUsers () {
+    //   const ref = app.firestore().collection('users')
+    //   const channel = eventChannel(emit => ref.onSnapshot(emit))
+    
+    //   try {
+    //     while (true) {
+    //       const data = yield take(channel)
+    //       yield put(successAction(data))
+    //     }
+    //   } catch (err) {
+    //     yield put(errorAction(err))
+    //   }
+    // }
+
+ant design - responsiveness
+row col(24/span) 
+
+go through event channel

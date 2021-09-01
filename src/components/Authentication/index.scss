@@ -1,0 +1,41 @@
+@import "../../variables.scss";
+
+$containerWidth: 350px;
+
+@mixin inputSize {
+  width: 260px !important;
+}
+
+.signIn {
+  p {
+    font-family: $instagram-font;
+    text-align: center;
+    font-size: 50px;
+    margin: 15px 0;
+  }
+  margin: 160px auto 0 auto;
+  padding: 0 45px;
+  width: $containerWidth;
+  background-color: $primaryColor;
+  box-sizing: border-box;
+  border: $border;
+  .inputEmail {
+    @include inputSize();
+  }
+  .inputDisplayName {
+    @include inputSize();
+  }
+  .inputPassword {
+    @include inputSize();
+    background-color: $secondaryColor !important;
+  }
+}
+
+.authFooter {
+  margin: 10px auto;
+  padding: 20px 0;
+  width: $containerWidth;
+  background-color: $primaryColor;
+  text-align: center;
+  border: $border;
+}
