@@ -8,7 +8,7 @@ import "./index.scss";
 function Authentication({ isSignUp }) {
   const dispatch = useDispatch();
   const history = useHistory();
-  const error = useSelector((state) => state.errorReducer);
+  const error = useSelector((state) => state.userReducer.error);
 
   const authSubmit = (email, password, displayName) => {
     if (isSignUp) {

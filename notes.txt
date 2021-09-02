@@ -14,8 +14,36 @@ todos:
     //     yield put(errorAction(err))
     //   }
     // }
+    
+    react-native
+    component, navigation
+    view ,opacity, touchabilty
+    stylesheet
 
-ant design - responsiveness
-row col(24/span) 
+-------------------------------------------
+ //event channel
+    let channels = [];
+    const channel = eventChannel((emit) => postRef.onSnapshot(emit));
+    channels.push(channel);
 
-go through event channel
+    while (true) {
+    let docs = [];
+    for (let channel of channels) {
+      const post = yield take(channel);
+      let ownerId = post.ref.path.split("/")[1];
+      docs = documents.map((doc) => {
+        if (doc.id === post.id) {
+          console.log(post.data());
+          return { ...post.data(), id: post.id, ownerId };
+        } else {
+          return doc;
+        }
+      });
+      yield put(setFeeds({ feeds: [...docs], isLoading: false }));
+    }
+  }
+}
+-------------------------------------------
+
+//removed error reducer, bug removed -> onClick of posts in profile page,
+like-removelike working with eventchannel

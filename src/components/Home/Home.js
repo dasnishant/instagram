@@ -10,12 +10,12 @@ function Home({ userReducer }) {
   const dispatch = useDispatch();
   const feedsReducer = useSelector((state) => state.feedsReducer);
 
-  const like = (userId, postId, ownerId, likes) => () => {
-    dispatch(sagaLike({ userId, postId, ownerId, likes }));
+  const like = (userId, postId, ownerId, likes, feeds) => () => {
+    dispatch(sagaLike({ userId, postId, ownerId, likes, feeds }));
   };
 
-  const removeLike = (userId, postId, ownerId, likes) => () => {
-    dispatch(sagaRemoveLike({ userId, postId, ownerId, likes }));
+  const removeLike = (userId, postId, ownerId, likes, feeds) => () => {
+    dispatch(sagaRemoveLike({ userId, postId, ownerId, likes, feeds }));
   };
   useEffect(() => {
     dispatch(sagaGetFeeds(userReducer.userId));
@@ -45,7 +45,8 @@ function Home({ userReducer }) {
                         userReducer.userId,
                         post.id,
                         post.ownerId,
-                        post.likes
+                        post.likes,
+                        feedsReducer.feeds
                       )}
                     />
                   ) : (
@@ -55,7 +56,8 @@ function Home({ userReducer }) {
                         userReducer.userId,
                         post.id,
                         post.ownerId,
-                        post.likes
+                        post.likes,
+                        feedsReducer.feeds
                       )}
                     />
                   )}

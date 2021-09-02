@@ -37,7 +37,6 @@ export function* signUp(action) {
   const { email, password, displayName, history } = action.payload;
   try {
     const response = yield FIREBASE.signUp(email, password);
-    yield put(setError(""));
     yield put(userLogIn({ userId: response.user.uid, email, displayName }));
     yield FIREBASE.setUser(response.user.uid, displayName);
     history.replace("/");
@@ -151,39 +150,58 @@ export function* unfollowUser(action) {
 }
 
 export function* likePost(action) {
-  const { userId, postId, ownerId, likes } = action.payload;
+  const { userId, postId, ownerId, likes, feeds } = action.payload;
   yield FIREBASE.like(userId, postId, ownerId, likes);
 
-  let documents = [];
-  const querySnapshot = yield FIREBASE.getFeeds(userId);
-  let posts = querySnapshot.data().postsRef;
-  for (let postRef of posts) {
-    let post = yield postRef.get();
-    documents.push({
-      ...post.data(),
-      id: post.id,
-      ownerId: postRef.path.split("/")[1],
+  const postRef = firestore
+    .collection("users")
+    .doc(ownerId)
+    .collection("posts")
+    .doc(postId);
+  const channel = eventChannel((emit) => postRef.onSnapshot(emit));
+
+  while (true) {
+    console.log("like");
+    let docs = [];
+    const post = yield take(channel);
+    let ownerId = post.ref.path.split("/")[1];
+    docs = feeds.map((doc) => {
+      if (doc.id === post.id) {
+        console.log(post.data());
+        return { ...post.data(), id: post.id, ownerId };
+      } else {
+        return doc;
+      }
     });
+    yield put(setFeeds({ feeds: docs, isLoading: false }));
   }
-  yield put(setFeeds({ feeds: documents, isLoading: false }));
 }
 
 export function* removeLikePost(action) {
-  const { userId, postId, ownerId, likes } = action.payload;
+  const { userId, postId, ownerId, likes, feeds } = action.payload;
   yield FIREBASE.removeLike(userId, postId, ownerId, likes);
 
-  let documents = [];
-  const querySnapshot = yield FIREBASE.getFeeds(userId);
-  let posts = querySnapshot.data().postsRef;
-  for (let postRef of posts) {
-    let post = yield postRef.get();
-    documents.push({
-      ...post.data(),
-      id: post.id,
-      ownerId: postRef.path.split("/")[1],
+  const postRef = firestore
+    .collection("users")
+    .doc(ownerId)
+    .collection("posts")
+    .doc(postId);
+  const channel = eventChannel((emit) => postRef.onSnapshot(emit));
+
+  while (true) {
+    let docs = [];
+    const post = yield take(channel);
+    let ownerId = post.ref.path.split("/")[1];
+    docs = feeds.map((doc) => {
+      if (doc.id === post.id) {
+        console.log(post.data());
+        return { ...post.data(), id: post.id, ownerId };
+      } else {
+        return doc;
+      }
     });
+    yield put(setFeeds({ feeds: docs, isLoading: false }));
   }
-  yield put(setFeeds({ feeds: documents, isLoading: false }));
 }
 
 export function* watchAllAction() {

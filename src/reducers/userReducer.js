@@ -1,6 +1,7 @@
 const userInitialState = {
   userId: null,
   displayName: null,
+  error: null,
 };
 
 const userReducer = (state = userInitialState, action) => {
@@ -10,15 +11,19 @@ const userReducer = (state = userInitialState, action) => {
         ...state,
         userId: action.payload.userId,
         displayName: action.payload.displayName,
+        error: null,
       };
     case "USER_LOG_IN":
       return {
         ...state,
         userId: action.payload.userId,
         displayName: action.payload.displayName,
+        error: null,
       };
     case "USER_LOG_OUT":
       return {};
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
     default:
       return state;
   }
