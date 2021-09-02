@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Header from "../Header/Header";
 import { Image, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { sagaGetFeeds, sagaLike, sagaRemoveLike } from "../../actions";
+import { sagaGetFeeds, sagaToggleLike } from "../../actions";
 import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 import "./index.scss";
 
@@ -10,13 +10,13 @@ function Home({ userReducer }) {
   const dispatch = useDispatch();
   const feedsReducer = useSelector((state) => state.feedsReducer);
 
-  const like = (userId, postId, ownerId, likes, feeds) => () => {
-    dispatch(sagaLike({ userId, postId, ownerId, likes, feeds }));
-  };
+  const toggleLike =
+    (userId, postId, ownerId, likes, feeds, likeStatus) => () => {
+      dispatch(
+        sagaToggleLike({ userId, postId, ownerId, likes, feeds, likeStatus })
+      );
+    };
 
-  const removeLike = (userId, postId, ownerId, likes, feeds) => () => {
-    dispatch(sagaRemoveLike({ userId, postId, ownerId, likes, feeds }));
-  };
   useEffect(() => {
     dispatch(sagaGetFeeds(userReducer.userId));
   }, [userReducer.userId, dispatch]);
@@ -41,23 +41,25 @@ function Home({ userReducer }) {
                   {post.likes.includes(userReducer.userId) ? (
                     <LikeFilled
                       style={{ fontSize: "22px" }}
-                      onClick={removeLike(
+                      onClick={toggleLike(
                         userReducer.userId,
                         post.id,
                         post.ownerId,
                         post.likes,
-                        feedsReducer.feeds
+                        feedsReducer.feeds,
+                        false
                       )}
                     />
                   ) : (
                     <LikeOutlined
                       style={{ fontSize: "22px" }}
-                      onClick={like(
+                      onClick={toggleLike(
                         userReducer.userId,
                         post.id,
                         post.ownerId,
                         post.likes,
-                        feedsReducer.feeds
+                        feedsReducer.feeds,
+                        true
                       )}
                     />
                   )}

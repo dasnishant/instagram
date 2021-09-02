@@ -78,6 +78,10 @@ export const sagaRemoveLike = (payload) => {
   return { type: "SAGA_REMOVE_LIKE", payload };
 };
 
+export const sagaToggleLike = (payload) => {
+  return { type: "SAGA_TOGGLE_LIKE", payload };
+};
+
 export const setError = (payload) => {
   return { type: "SET_ERROR", payload };
 };

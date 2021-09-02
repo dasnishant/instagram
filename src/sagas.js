@@ -149,37 +149,14 @@ export function* unfollowUser(action) {
   yield FIREBASE.startUnfollowing(action.payload.id, action.payload.user.id);
 }
 
-export function* likePost(action) {
-  const { userId, postId, ownerId, likes, feeds } = action.payload;
-  yield FIREBASE.like(userId, postId, ownerId, likes);
+export function* toggleLike(action) {
+  const { userId, postId, ownerId, likes, feeds, likeStatus } = action.payload;
 
-  const postRef = firestore
-    .collection("users")
-    .doc(ownerId)
-    .collection("posts")
-    .doc(postId);
-  const channel = eventChannel((emit) => postRef.onSnapshot(emit));
-
-  while (true) {
-    console.log("like");
-    let docs = [];
-    const post = yield take(channel);
-    let ownerId = post.ref.path.split("/")[1];
-    docs = feeds.map((doc) => {
-      if (doc.id === post.id) {
-        console.log(post.data());
-        return { ...post.data(), id: post.id, ownerId };
-      } else {
-        return doc;
-      }
-    });
-    yield put(setFeeds({ feeds: docs, isLoading: false }));
+  if (likeStatus) {
+    yield FIREBASE.like(userId, postId, ownerId, likes);
+  } else {
+    yield FIREBASE.removeLike(userId, postId, ownerId, likes);
   }
-}
-
-export function* removeLikePost(action) {
-  const { userId, postId, ownerId, likes, feeds } = action.payload;
-  yield FIREBASE.removeLike(userId, postId, ownerId, likes);
 
   const postRef = firestore
     .collection("users")
@@ -214,8 +191,7 @@ export function* watchAllAction() {
   yield takeLatest("SET_SAGA_ALL_USERS", getAllUsers);
   yield takeLatest("SAGA_FOLLOW", followUser);
   yield takeLatest("SAGA_UNFOLLOW", unfollowUser);
-  yield takeLatest("SAGA_LIKE", likePost);
-  yield takeLatest("SAGA_REMOVE_LIKE", removeLikePost);
+  yield takeLatest("SAGA_TOGGLE_LIKE", toggleLike);
 }
 
 export function* rootSaga() {
