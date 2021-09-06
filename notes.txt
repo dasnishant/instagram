@@ -45,5 +45,4 @@ todos:
 }
 -------------------------------------------
 
-//removed error reducer, bug removed -> onClick of posts in profile page,
-like-removelike working with eventchannel
+//removed event channel for like, used select effect

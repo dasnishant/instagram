@@ -5,21 +5,20 @@ import { sagaFollow, sagaUnfollow, setSagaAllUsers } from "../../actions";
 
 function UsersList() {
   const allUsersReducer = useSelector((state) => state.allUsersReducer);
-  const userReducer = useSelector((state) => state.userReducer);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setSagaAllUsers(userReducer.userId));
+    dispatch(setSagaAllUsers());
     return () => {};
-  }, [userReducer.userId, dispatch]);
+  }, [dispatch]);
 
   const follow = (user) => () => {
-    dispatch(sagaFollow({ user, id: userReducer.userId }));
+    dispatch(sagaFollow(user));
   };
 
   const unFollow = (user) => () => {
-    dispatch(sagaUnfollow({ user, id: userReducer.userId }));
+    dispatch(sagaUnfollow(user));
   };
 
   return (

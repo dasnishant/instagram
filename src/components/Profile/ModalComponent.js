@@ -10,9 +10,9 @@ function ModalComponent({ handleCancel, profileInfo, showModal }) {
 
   useEffect(() => {
     if (showModal === "followers" && !profileInfo.followersList.length) {
-      dispatch(setSagaFollowers({ userId: profileInfo.userId, showModal }));
+      dispatch(setSagaFollowers(showModal));
     } else if (showModal === "following" && !profileInfo.followingList.length) {
-      dispatch(setSagaFollowing({ userId: profileInfo.userId, showModal }));
+      dispatch(setSagaFollowing(showModal));
     }
     return () => {};
   }, [

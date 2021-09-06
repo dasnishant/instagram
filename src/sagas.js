@@ -1,6 +1,7 @@
-import { all, take, takeLatest, put } from "@redux-saga/core/effects";
+import { all, take, takeLatest, put, select } from "@redux-saga/core/effects";
 import { eventChannel } from "redux-saga";
 import {
+  sagaGetFeeds,
   setAllUsers,
   setError,
   setFeeds,
@@ -46,9 +47,10 @@ export function* signUp(action) {
   }
 }
 
-export function* getFeeds(action) {
+export function* getFeeds() {
+  const userId = yield select((state) => state.userReducer.userId);
   let documents = [];
-  const querySnapshot = yield FIREBASE.getFeeds(action.payload);
+  const querySnapshot = yield FIREBASE.getFeeds(userId);
   let posts = querySnapshot.data().postsRef;
   for (let postRef of posts) {
     let post = yield postRef.get();
@@ -81,11 +83,9 @@ export function* getProfile(action) {
 
 export function* getFollowers(action) {
   let docs = [];
+  const userId = yield select((state) => state.profileReducer.userId);
 
-  const followersResponse = yield FIREBASE.getFollowers(
-    action.payload.userId,
-    action.payload.showModal
-  );
+  const followersResponse = yield FIREBASE.getFollowers(userId, action.payload);
 
   followersResponse.forEach((doc) => {
     docs.push({ id: doc.id, ...doc.data() });
@@ -96,11 +96,9 @@ export function* getFollowers(action) {
 
 export function* getFollowing(action) {
   let docs = [];
+  const userId = yield select((state) => state.profileReducer.userId);
 
-  const followingResponse = yield FIREBASE.getFollowing(
-    action.payload.userId,
-    action.payload.showModal
-  );
+  const followingResponse = yield FIREBASE.getFollowing(userId, action.payload);
 
   followingResponse.forEach((doc) => {
     docs.push({ id: doc.id, ...doc.data() });
@@ -109,20 +107,19 @@ export function* getFollowing(action) {
   yield put(setFollowing({ followingList: docs, isLoading: false }));
 }
 
-export function* getAllUsers(action) {
+export function* getAllUsers() {
   let users = [];
+  const userId = yield select((state) => state.userReducer.userId);
+
   const allUsersResponse = yield FIREBASE.getAllUsers();
 
   allUsersResponse.forEach((doc) => {
-    if (doc.id !== action.payload) {
+    if (doc.id !== userId) {
       users.push({ ...doc.data(), id: doc.id });
     }
   });
 
-  const ref = firestore
-    .collection("users")
-    .doc(action.payload)
-    .collection("following");
+  const ref = firestore.collection("users").doc(userId).collection("following");
   const channel = eventChannel((emit) => ref.onSnapshot(emit));
 
   while (true) {
@@ -138,19 +135,24 @@ export function* getAllUsers(action) {
 }
 
 export function* followUser(action) {
+  const userId = yield select((state) => state.userReducer.userId);
+
   yield FIREBASE.startFollowing(
+    userId,
     action.payload.id,
-    action.payload.user.id,
-    action.payload.user.displayName
+    action.payload.displayName
   );
 }
 
 export function* unfollowUser(action) {
-  yield FIREBASE.startUnfollowing(action.payload.id, action.payload.user.id);
+  const userId = yield select((state) => state.userReducer.userId);
+
+  yield FIREBASE.startUnfollowing(userId, action.payload.id);
 }
 
 export function* toggleLike(action) {
-  const { userId, postId, ownerId, likes, feeds, likeStatus } = action.payload;
+  const userId = yield select((state) => state.userReducer.userId);
+  const { postId, ownerId, likes, likeStatus } = action.payload;
 
   if (likeStatus) {
     yield FIREBASE.like(userId, postId, ownerId, likes);
@@ -158,27 +160,7 @@ export function* toggleLike(action) {
     yield FIREBASE.removeLike(userId, postId, ownerId, likes);
   }
 
-  const postRef = firestore
-    .collection("users")
-    .doc(ownerId)
-    .collection("posts")
-    .doc(postId);
-  const channel = eventChannel((emit) => postRef.onSnapshot(emit));
-
-  while (true) {
-    let docs = [];
-    const post = yield take(channel);
-    let ownerId = post.ref.path.split("/")[1];
-    docs = feeds.map((doc) => {
-      if (doc.id === post.id) {
-        console.log(post.data());
-        return { ...post.data(), id: post.id, ownerId };
-      } else {
-        return doc;
-      }
-    });
-    yield put(setFeeds({ feeds: docs, isLoading: false }));
-  }
+  yield put(sagaGetFeeds(userId));
 }
 
 export function* watchAllAction() {

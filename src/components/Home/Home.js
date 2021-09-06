@@ -10,16 +10,13 @@ function Home({ userReducer }) {
   const dispatch = useDispatch();
   const feedsReducer = useSelector((state) => state.feedsReducer);
 
-  const toggleLike =
-    (userId, postId, ownerId, likes, feeds, likeStatus) => () => {
-      dispatch(
-        sagaToggleLike({ userId, postId, ownerId, likes, feeds, likeStatus })
-      );
-    };
+  const toggleLike = (postId, ownerId, likes, feeds, likeStatus) => () => {
+    dispatch(sagaToggleLike({ postId, ownerId, likes, feeds, likeStatus }));
+  };
 
   useEffect(() => {
-    dispatch(sagaGetFeeds(userReducer.userId));
-  }, [userReducer.userId, dispatch]);
+    dispatch(sagaGetFeeds());
+  }, [dispatch]);
 
   return (
     <>
@@ -42,7 +39,6 @@ function Home({ userReducer }) {
                     <LikeFilled
                       style={{ fontSize: "22px" }}
                       onClick={toggleLike(
-                        userReducer.userId,
                         post.id,
                         post.ownerId,
                         post.likes,
@@ -54,7 +50,6 @@ function Home({ userReducer }) {
                     <LikeOutlined
                       style={{ fontSize: "22px" }}
                       onClick={toggleLike(
-                        userReducer.userId,
                         post.id,
                         post.ownerId,
                         post.likes,
