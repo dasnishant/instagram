@@ -26,10 +26,6 @@ export const setFeeds = (payload) => {
   return { type: "SET_FEEDS", payload };
 };
 
-export const resetFeeds = () => {
-  return { type: "RESET_FEEDS" };
-};
-
 export const sagaSetProfile = (payload) => {
   return { type: "SAGA_GET_PROFILE", payload };
 };
@@ -68,14 +64,6 @@ export const sagaFollow = (payload) => {
 
 export const sagaUnfollow = (payload) => {
   return { type: "SAGA_UNFOLLOW", payload };
-};
-
-export const sagaLike = (payload) => {
-  return { type: "SAGA_LIKE", payload };
-};
-
-export const sagaRemoveLike = (payload) => {
-  return { type: "SAGA_REMOVE_LIKE", payload };
 };
 
 export const sagaToggleLike = (payload) => {

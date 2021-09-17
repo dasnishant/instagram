@@ -45,4 +45,4 @@ todos:
 }
 -------------------------------------------
 
-//removed event channel for like, used select effect
+follow and unfollow should reflect changes to DB

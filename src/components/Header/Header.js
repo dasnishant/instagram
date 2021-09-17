@@ -3,7 +3,7 @@ import { Avatar, Input } from "antd";
 import { HomeOutlined, LogoutOutlined } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { resetFeeds, userLogOut } from "../../actions";
+import { userLogOut } from "../../actions";
 import UsersList from "./UsersList";
 import "./index.scss";
 
@@ -46,7 +46,6 @@ function Header() {
             className="logoutIcon"
             onClick={() => {
               dispatch(userLogOut());
-              dispatch(resetFeeds({ feeds: [], isloading: true }));
             }}
           />
         </div>
