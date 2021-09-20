@@ -136,11 +136,13 @@ export function* getAllUsers() {
 
 export function* followUser(action) {
   const userId = yield select((state) => state.userReducer.userId);
+  const displayName = yield select((state) => state.userReducer.displayName);
 
   yield FIREBASE.startFollowing(
     userId,
     action.payload.id,
-    action.payload.displayName
+    action.payload.displayName,
+    displayName
   );
 }
 
