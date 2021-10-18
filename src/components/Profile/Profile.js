@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { Spin, Image } from "antd";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import CountComponent from "./CountComponent";
 import ModalComponent from "./ModalComponent";
 import { useDispatch, useSelector } from "react-redux";
-import { sagaSetProfile } from "../../actions";
+import { sagaGetProfile } from "../../actions";
 import "./index.scss";
 
 function Profile() {
-  const param = useParams();
+  // const param = useParams();
   const dispatch = useDispatch();
   const profileInfo = useSelector((state) => state.profileReducer);
   const [showModal, setshowModal] = useState(null);
@@ -18,10 +18,14 @@ function Profile() {
     setshowModal(false);
   };
 
+  //wrapper(url,params,method)
+  // get (no body)
+  // post,put,patch body can be there
+  //body-> success:true, data:json obj
+
   useEffect(() => {
-    dispatch(sagaSetProfile(param.userId));
-    return () => {};
-  }, [param.userId, dispatch]);
+    dispatch(sagaGetProfile());
+  }, [dispatch]);
 
   return profileInfo.isLoading ? (
     <div className="loading">

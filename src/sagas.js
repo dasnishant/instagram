@@ -1,5 +1,5 @@
-import { all, take, takeLatest, put, select } from "@redux-saga/core/effects";
-import { eventChannel } from "redux-saga";
+import { all, takeLatest, put, select } from "@redux-saga/core/effects";
+// import { eventChannel } from "redux-saga";
 import {
   sagaGetFeeds,
   setAllUsers,
@@ -8,30 +8,27 @@ import {
   setFollowers,
   setFollowing,
   setProfile,
+  setSagaAllUsers,
   userLogIn,
-  userSignUp,
+  // userSignUp,
 } from "./actions";
-import { firestore } from "./firebase/config";
 import FIREBASE from "./firebase/utils";
+import mockApi, { getUrl } from "./mockAPI";
+import {
+  ALL_USERS_URL,
+  AUTH_URL,
+  FEEDS_URL,
+  PROFILE_FOLLOWERS_URL,
+  PROFILE_FOLLOWING_URL,
+  PROFILE_POSTS_URL,
+  PROFILE_URL,
+} from "./urlConfig";
 
 export function* logIn(action) {
-  const { email, password, history } = action.payload;
-  try {
-    const response = yield FIREBASE.logIn(email, password);
-    const userResponse = yield FIREBASE.getUser(response.user.uid);
-    console.log(userResponse.data().displayName);
-    yield put(
-      userSignUp({
-        userId: response.user.uid,
-        email,
-        displayName: userResponse.data().displayName,
-      })
-    );
-    yield history.replace("/");
-  } catch (error) {
-    console.log(error.code.split("/")[1]);
-    yield put(setError(error.code.split("/")[1]));
-  }
+  const { history } = action.payload;
+  const authResponse = yield mockApi(getUrl(AUTH_URL), "GET");
+  yield put(userLogIn({ ...authResponse }));
+  yield history.replace("/");
 }
 
 export function* signUp(action) {
@@ -48,121 +45,144 @@ export function* signUp(action) {
 }
 
 export function* getFeeds() {
-  const userId = yield select((state) => state.userReducer.userId);
-  let documents = [];
-  const querySnapshot = yield FIREBASE.getFeeds(userId);
-  let posts = querySnapshot.data().postsRef;
-  for (let postRef of posts) {
-    let post = yield postRef.get();
-    documents.push({
-      ...post.data(),
-      id: post.id,
-      ownerId: postRef.path.split("/")[1],
-    });
-  }
-  yield put(setFeeds({ feeds: documents, isLoading: false }));
+  const feeds = yield mockApi(getUrl(FEEDS_URL), "GET");
+  yield put(setFeeds({ feeds, isLoading: false }));
 }
 
-export function* getProfile(action) {
-  const profileDataResponse = yield FIREBASE.getProfile(action.payload);
-  const profilePostsResponse = yield FIREBASE.getProfilePosts(action.payload);
-  let postsDoc = [];
-  profilePostsResponse.docs.forEach((post) =>
-    postsDoc.push({ ...post.data(), id: post.id })
-  );
+export function* getProfile() {
+  const profile = yield mockApi(getUrl(PROFILE_URL), "GET");
+  const profilePosts = yield mockApi(getUrl(PROFILE_POSTS_URL), "GET");
 
   yield put(
     setProfile({
       isLoading: false,
-      userId: action.payload,
-      posts: postsDoc,
-      ...profileDataResponse.data(),
+      posts: profilePosts,
+      ...profile,
     })
   );
 }
 
-export function* getFollowers(action) {
-  let docs = [];
-  const userId = yield select((state) => state.profileReducer.userId);
-
-  const followersResponse = yield FIREBASE.getFollowers(userId, action.payload);
-
-  followersResponse.forEach((doc) => {
-    docs.push({ id: doc.id, ...doc.data() });
-  });
-
-  yield put(setFollowers({ followersList: docs, isLoading: false }));
+export function* getFollowers() {
+  const followersList = yield mockApi(getUrl(PROFILE_FOLLOWERS_URL), "GET");
+  yield put(setFollowers({ followersList, isLoading: false }));
 }
 
-export function* getFollowing(action) {
-  let docs = [];
-  const userId = yield select((state) => state.profileReducer.userId);
-
-  const followingResponse = yield FIREBASE.getFollowing(userId, action.payload);
-
-  followingResponse.forEach((doc) => {
-    docs.push({ id: doc.id, ...doc.data() });
-  });
-
-  yield put(setFollowing({ followingList: docs, isLoading: false }));
+export function* getFollowing() {
+  const followingList = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "GET");
+  yield put(setFollowing({ followingList, isLoading: false }));
 }
 
 export function* getAllUsers() {
-  let users = [];
+  // let users = [];
+  // const userId = yield select((state) => state.userReducer.userId);
+
+  // const allUsersResponse = yield FIREBASE.getAllUsers();
+
+  // allUsersResponse.forEach((doc) => {
+  //   if (doc.id !== userId) {
+  //     users.push({ ...doc.data(), id: doc.id });
+  //   }
+  // });
+
+  // const ref = firestore.collection("users").doc(userId).collection("following");
+  // const channel = eventChannel((emit) => ref.onSnapshot(emit));
+
+  // while (true) {
+  //   const data = yield take(channel);
+  //   yield put(
+  //     setAllUsers({
+  //       isLoading: false,
+  //       following: data.docs.map((doc) => doc.id),
+  //       allUsers: users,
+  //     })
+  //   );
+  // }
+
   const userId = yield select((state) => state.userReducer.userId);
-
-  const allUsersResponse = yield FIREBASE.getAllUsers();
-
-  allUsersResponse.forEach((doc) => {
-    if (doc.id !== userId) {
-      users.push({ ...doc.data(), id: doc.id });
-    }
-  });
-
-  const ref = firestore.collection("users").doc(userId).collection("following");
-  const channel = eventChannel((emit) => ref.onSnapshot(emit));
-
-  while (true) {
-    const data = yield take(channel);
-    yield put(
-      setAllUsers({
-        isLoading: false,
-        following: data.docs.map((doc) => doc.id),
-        allUsers: users,
-      })
-    );
-  }
-}
-
-export function* followUser(action) {
-  const userId = yield select((state) => state.userReducer.userId);
-  const displayName = yield select((state) => state.userReducer.displayName);
-
-  yield FIREBASE.startFollowing(
-    userId,
-    action.payload.id,
-    action.payload.displayName,
-    displayName
+  const allUsers = yield mockApi(getUrl(ALL_USERS_URL), "GET");
+  const followingList = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "GET");
+  yield put(
+    setAllUsers({
+      isLoading: false,
+      following: followingList.map((doc) => doc.id),
+      allUsers: allUsers.filter((doc) => doc.id !== userId),
+    })
   );
 }
 
-export function* unfollowUser(action) {
-  const userId = yield select((state) => state.userReducer.userId);
+export function* followUser(action) {
+  let { id, displayName } = action.payload;
+  let followingRes = yield select(
+    (state) => state.profileReducer.followingList
+  );
+  if (!followingRes) {
+    followingRes = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "GET");
+  }
+  const res = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "PUT", {
+    success: true,
+    data: [...followingRes, { id: id, displayName: displayName }],
+  });
 
-  yield FIREBASE.startUnfollowing(userId, action.payload.id);
+  console.log(res);
+
+  yield put(setSagaAllUsers());
+}
+
+export function* unfollowUser(action) {
+  let { id } = action.payload;
+  let followingRes = yield select(
+    (state) => state.profileReducer.followingList
+  );
+  if (!followingRes) {
+    followingRes = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "GET");
+  }
+  const res = yield mockApi(getUrl(PROFILE_FOLLOWING_URL), "PUT", {
+    success: true,
+    data: followingRes.filter((doc) => doc.id !== id),
+  });
+
+  console.log(res);
+
+  yield put(setSagaAllUsers());
 }
 
 export function* toggleLike(action) {
   const userId = yield select((state) => state.userReducer.userId);
+  const feeds = yield select((state) => state.feedsReducer.feeds);
   const { postId, ownerId, likes, likeStatus } = action.payload;
-
+  let body;
   if (likeStatus) {
-    yield FIREBASE.like(userId, postId, ownerId, likes);
+    body = feeds.map((post) => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          likes: [...post.likes, userId],
+        };
+      }
+      return post;
+    });
   } else {
-    yield FIREBASE.removeLike(userId, postId, ownerId, likes);
+    body = feeds.map((post) => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          likes: post.likes.filter((doc) => doc !== userId),
+        };
+      }
+      return post;
+    });
   }
 
-  yield put(sagaGetFeeds(userId));
+  console.log("body", body);
+
+  const res = yield mockApi(getUrl(FEEDS_URL), "PUT", {
+    success: true,
+    data: body,
+  });
+
+  console.log("res", res);
+
+  yield put(sagaGetFeeds());
 }
 
 export function* watchAllAction() {

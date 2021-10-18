@@ -5,15 +5,15 @@ const profileInitialState = {
   followers: null,
   following: null,
   postsCount: null,
-  posts: [],
-  followersList: [],
-  followingList: [],
+  posts: null,
+  followersList: null,
+  followingList: null,
 };
 
 const profileReducer = (state = profileInitialState, action) => {
   switch (action.type) {
     case "SET_PROFILE":
-      return { ...action.payload, followersList: [], followingList: [] };
+      return { ...action.payload, followersList: null, followingList:null };
     case "SET_FOLLOWERS":
       return {
         ...state,

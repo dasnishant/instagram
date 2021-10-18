@@ -10,8 +10,8 @@ function Home({ userReducer }) {
   const dispatch = useDispatch();
   const feedsReducer = useSelector((state) => state.feedsReducer);
 
-  const toggleLike = (postId, ownerId, likes, feeds, likeStatus) => () => {
-    dispatch(sagaToggleLike({ postId, ownerId, likes, feeds, likeStatus }));
+  const toggleLike = (postId, ownerId, likes, likeStatus) => () => {
+    dispatch(sagaToggleLike({ postId, ownerId, likes, likeStatus }));
   };
 
   useEffect(() => {
@@ -42,7 +42,6 @@ function Home({ userReducer }) {
                         post.id,
                         post.ownerId,
                         post.likes,
-                        feedsReducer.feeds,
                         false
                       )}
                     />
@@ -53,7 +52,6 @@ function Home({ userReducer }) {
                         post.id,
                         post.ownerId,
                         post.likes,
-                        feedsReducer.feeds,
                         true
                       )}
                     />

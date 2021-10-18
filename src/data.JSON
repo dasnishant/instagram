@@ -1,0 +1,93 @@
+profileResponse
+
+{
+  "success":true,
+  "data":{  
+  "id":"81DIg3b9yVgPOqLFbwRFljZsMqn2",
+  "displayName": "abcUser",
+  "followers":1,
+  "following":1,
+  "postsCount":1
+  }
+}
+
+profiePostsResponse
+
+{
+    "success":true,
+    "data":[
+    {
+      "id":"nzgnOAkawtYnA9y57JpB",
+    "caption":"abc's caption",
+    "imageUrl":"https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxleHBsb3JlLWZlZWR8Mnx8fGVufDB8fHx8&w=1000&q=80",
+    "likes":["HutUQYJvRnZRYX2F3cm0egnfnvk1"]
+    }
+  ]
+}
+
+profileFollowersResponse
+{
+  "success":true,
+  "data":[{
+    "id":"HutUQYJvRnZRYX2F3cm0egnfnvk1",
+    "displayName":"xyz"
+  }]
+}
+
+profileFollowingResponse
+{
+  "success":true,
+  "data":[{
+    "id":"HutUQYJvRnZRYX2F3cm0egnfnvk1",
+    "displayName":"xyz"
+  }]
+}
+
+feedsResponse
+{
+  "success":true,
+  "data":[{
+    "id":"X4yL2bw0yywOMnqaAbtU",
+    "ownerID":"HutUQYJvRnZRYX2F3cm0egnfnvk1",
+    "caption":"xyz's book caption",
+    "imageUrl":"https://static.statusqueen.com/dpimages/thumbnail/Alone_dp_-1982.jpg",
+    "likes":["81DIg3b9yVgPOqLFbwRFljZsMqn2"]
+  },
+  {
+    "id":"xRZvOvLFyGiHawhoro2V",
+    "ownerID":"HutUQYJvRnZRYX2F3cm0egnfnvk1",
+    "caption":"xyz's light caption",
+    "imageUrl":"https://analyticsindiamag.com/wp-content/uploads/2020/10/7d744a684fe03ebc7e8de545f97739dd.jpg",
+    "likes":["81DIg3b9yVgPOqLFbwRFljZsMqn2"]
+  }
+]
+}
+
+allUsersResponse
+{
+  "success":true,
+  "data":[
+    {
+      "id":"1IK2AVuAmbQEZtxm9D24D5x0MD53",
+      "displayName":"user3"
+    },
+    {
+      "id":"81DIg3b9yVgPOqLFbwRFljZsMqn2",
+      "displayName":"abcUser"
+    },{
+      "id":"HutUQYJvRnZRYX2F3cm0egnfnvk1",
+      "displayName":"xyz"
+    }
+  ]
+}
+
+authResponse
+
+{
+  "success":true,
+  "data":{
+    "userId":"81DIg3b9yVgPOqLFbwRFljZsMqn2",
+    "displayName":"abcUser",
+    "error":null
+  }
+}

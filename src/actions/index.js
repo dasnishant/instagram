@@ -18,40 +18,40 @@ export const userLogOut = () => {
   return { type: "USER_LOG_OUT" };
 };
 
-export const sagaGetFeeds = (payload) => {
-  return { type: "SAGA_GET_FEEDS", payload };
+export const sagaGetFeeds = () => {
+  return { type: "SAGA_GET_FEEDS" };
 };
 
 export const setFeeds = (payload) => {
   return { type: "SET_FEEDS", payload };
 };
 
-export const sagaSetProfile = (payload) => {
-  return { type: "SAGA_GET_PROFILE", payload };
+export const sagaGetProfile = () => {
+  return { type: "SAGA_GET_PROFILE" };
 };
 
 export const setProfile = (payload) => {
   return { type: "SET_PROFILE", payload };
 };
 
-export const setSagaFollowers = (payload) => {
-  return { type: "SET_SAGA_FOLLOWERS", payload };
+export const setSagaFollowers = () => {
+  return { type: "SET_SAGA_FOLLOWERS" };
 };
 
 export const setFollowers = (payload) => {
   return { type: "SET_FOLLOWERS", payload };
 };
 
-export const setSagaFollowing = (payload) => {
-  return { type: "SET_SAGA_FOLLOWING", payload };
+export const setSagaFollowing = () => {
+  return { type: "SET_SAGA_FOLLOWING" };
 };
 
 export const setFollowing = (payload) => {
   return { type: "SET_FOLLOWING", payload };
 };
 
-export const setSagaAllUsers = (payload) => {
-  return { type: "SET_SAGA_ALL_USERS", payload };
+export const setSagaAllUsers = () => {
+  return { type: "SET_SAGA_ALL_USERS" };
 };
 
 export const setAllUsers = (payload) => {
